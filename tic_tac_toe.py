@@ -88,11 +88,19 @@ class TicTacToe():
 
         if self.symbol_list[grid_index] == " ":
             self.symbol_list[grid_index] = self.player_symbol
+        
 
-    def print_latencies():
-        latency_time = measure_latency('127.0.0.1')
-        print("Propagation Delay={}".format(round(latency_time[0],3)))
-        print("Round trip time={}".format(round(2*latency_time[0],3)))
+    def print_latencies(self):
+        propogation_delays = measure_latency(host='192.168.1.4', port = 12784, timeout =15, runs = 3)
+        sample_rtts = [ 2 * propogation_delays[0] , 2 * propogation_delays[1],2 * propogation_delays[2]]
+        estimated_rtt = float(sum(sample_rtts) / len(sample_rtts))
+        print("Estimate RTT={}ms".format(round(estimated_rtt,4)))
+        propogation_delay =  measure_latency(host='192.168.1.4', port = 12784, timeout =15)
+        sample_rtt = float(2 * propogation_delay[0])
+        estimated_rtt = (1 - 0.125) * estimated_rtt + (0.125) * sample_rtt
+        print("Propagation Delay={}ms".format(round(propogation_delays[1],4)))
+        print("Round trip time={}ms".format(round(estimated_rtt,4)))
+        print("Sample RTT={}ms".format(round(sample_rtt,4)))
 
 
     def update_symbol_list(self, new_symbol_list):

@@ -4,8 +4,8 @@ import pickle # for sending/receiving objects
 # import the game
 from tic_tac_toe import TicTacToe
 
-HOST = '127.0.0.1' # this address is the "local host"
-PORT = 12783       # port to listen on for clients  
+HOST = '192.168.1.4' # this address is the "local host"
+PORT = 12784       # port to listen on for clients  
 
 # set up the server 
 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -40,7 +40,6 @@ while rematch == True:
         # pickle the symbol list and send it 
         x_symbol_list = pickle.dumps(player_x.symbol_list)
         client_socket.send(x_symbol_list)
-        TicTacToe.print_latencies()
 
         # if the player won with the last move or it's a draw, exit the loop 
         if player_x.did_win("X") == True or player_x.is_draw() == True:
@@ -55,11 +54,12 @@ while rematch == True:
     # end game messages
     if player_x.did_win("X") == True:
         print(f"Congrats, you won!")
+        player_x.print_latencies()
     elif player_x.is_draw() == True:
         print(f"It's a draw!")
+        player_x.print_latencies()
     else:
         print(f"Sorry, the client won.")
-
     # ask for a rematch 
     host_response = input(f"\nRematch? (Y/N): ")
     host_response = host_response.capitalize()
