@@ -3,18 +3,14 @@ Tic Tac Toe
 """
 from tcp_latency import measure_latency
 
-class TicTacToe():
+class game():
 
-    def __init__(self, player_symbol):
-        # initialize the list of symbols
-        self.symbol_list = []
-
-        # defines all nine symbols; all start off as blank  
+    def __init__(self, symbol_of_player):
+        self.list_of_symbols = []
         for i in range(9):
-            self.symbol_list.append(" ") 
+            self.list_of_symbols.append(" ") 
 
-        # initializes the player symbol
-        self.player_symbol = player_symbol
+        self.symbol_of_player = symbol_of_player
 
 
     def restart(self):
@@ -24,136 +20,137 @@ class TicTacToe():
 
 
     def draw_grid(self):
-        # display the column headers
+        #printing columns
         print("\n       A   B   C\n")
         
-        # display first row 
-        row_one = "   1   " + self.symbol_list[0]
-        row_one += " ║ " + self.symbol_list[1]
-        row_one += " ║ " + self.symbol_list[2]
-        print(row_one)
+        #printing row one
+        first_row = "   1   " + self.list_of_symbols[0]
+        first_row += " ║ " + self.list_of_symbols[1]
+        first_row += " ║ " + self.list_of_symbols[2]
+        print(first_row)
 
-        # display divider
+        #separating rows
         print("      ═══╬═══╬═══")
 
-        # display second row 
-        row_two = "   2   " + self.symbol_list[3]
-        row_two += " ║ " + self.symbol_list[4]
-        row_two += " ║ " + self.symbol_list[5]
-        print(row_two)
+        #printing row two
+        second_row = "   2   " + self.list_of_symbols[3]
+        second_row += " ║ " + self.list_of_symbols[4]
+        second_row += " ║ " + self.list_of_symbols[5]
+        print(second_row)
 
-        # display divider
+        #separating rows
         print("      ═══╬═══╬═══")
 
         # display third and last row 
-        row_three = "   3   " + self.symbol_list[6]
-        row_three += " ║ " + self.symbol_list[7]
-        row_three += " ║ " + self.symbol_list[8]
-        print(row_three, "\n")
+        third_row = "   3   " + self.list_of_symbols[6]
+        third_row += " ║ " + self.list_of_symbols[7]
+        third_row += " ║ " + self.list_of_symbols[8]
+        print(third_row, "\n")
 
 
-    def edit_square(self, grid_coord):
-        # swamps coordinates such as "1A" to "A1"
-        if grid_coord[0].isdigit():
-            grid_coord = grid_coord[1] + grid_coord[0]
+    def edit_square(self, grid_co_ordinate):
+        #code to swap the coordinates from 1a to a1 
+        if grid_co_ordinate[0].isdigit():
+            grid_co_ordinate = grid_co_ordinate[1] + grid_co_ordinate[0]
 
-        # divides the coordinate 
-        col = grid_coord[0].capitalize()
-        row = grid_coord[1]
+        #separates the row and column from the given coordinate
+        column = grid_co_ordinate[0].capitalize()
+        row = grid_co_ordinate[1]
 
         # converts "A1" to 0, "C3" to 8, and so forth 
-        grid_index = 0
+        index_of_grid = 0
 
         if row == "1":
-            if col == "A":
-                grid_index = 0
-            elif col == "B":
-                grid_index = 1
-            elif col == "C":
-                grid_index = 2
+            if column == "A":
+                index_of_grid = 0
+            elif column == "B":
+                index_of_grid = 1
+            elif column == "C":
+                index_of_grid = 2
         elif row == "2":
-            if col == "A":
-                grid_index = 3
-            elif col == "B":
-                grid_index = 4
-            elif col == "C":
-                grid_index = 5
+            if column == "A":
+                index_of_grid = 3
+            elif column == "B":
+                index_of_grid = 4
+            elif column == "C":
+                index_of_grid = 5
         elif row == "3":
-            if col == "A":
-                grid_index = 6
-            elif col == "B":
-                grid_index = 7
-            elif col == "C":
-                grid_index = 8
+            if column == "A":
+                index_of_grid = 6
+            elif column == "B":
+                index_of_grid = 7
+            elif column == "C":
+                index_of_grid = 8
 
-        if self.symbol_list[grid_index] == " ":
-            self.symbol_list[grid_index] = self.player_symbol
+        if self.list_of_symbols[index_of_grid] == " ":
+            self.list_of_symbols[index_of_grid] = self.symbol_of_player
+        
 
-    def print_latencies():
-        latency_time = measure_latency('127.0.0.1')
-        print("Propagation Delay={}".format(round(latency_time[0],3)))
-        print("Round trip time={}".format(round(2*latency_time[0],3)))
+    def printing_latencies(self):
+        propogation_delays = measure_latency(host='192.168.1.4', port = 12784, timeout =15, runs = 3)
+        sample_rtts = [ 2 * propogation_delays[0] , 2 * propogation_delays[1],2 * propogation_delays[2]]
+        estimated_rtt = float(sum(sample_rtts) / len(sample_rtts))
+        print("Estimate RTT={}ms".format(round(estimated_rtt,4)))
+        propogation_delay =  measure_latency(host='192.168.1.4', port = 12784, timeout =15)
+        sample_rtt = float(2 * propogation_delay[0])
+        estimated_rtt = (1 - 0.125) * estimated_rtt + (0.125) * sample_rtt
+        print("Propagation Delay={}ms".format(round(propogation_delays[1],4)))
+        print("Round trip time={}ms".format(round(estimated_rtt,4)))
+        print("Sample RTT={}ms".format(round(sample_rtt,4)))
 
 
-    def update_symbol_list(self, new_symbol_list):
+    def update_symbol_list(self, symbol_list_updated):
         for i in range(9):
-            self.symbol_list[i] = new_symbol_list[i]
+            self.list_of_symbols[i] = symbol_list_updated[i]
 
 
-    def did_win(self, player_symbol):
-        # local variable to replace unweildy self.symbol_list
-        g = []
+    def player_win(self, symbol_of_player):
+        symbols = []
         for i in range(9):
-            g.append(self.symbol_list[i])
+            symbols.append(self.list_of_symbols[i])
+    
+        symbol = symbol_of_player
 
-        # likewise to replace self.player_symbol 
-        sym = player_symbol
-
-        # check top row 
-        if g[0] == sym and g[1] == sym and g[2] == sym:
+        #checking the winning pattern across top, middle and bottom rows
+        if symbols[0] == symbol and symbols[1] == symbol and symbols[2] == symbol:
             return True
 
-        # check middle row
-        elif g[3] == sym and g[4] == sym and g[5] == sym:
+        elif symbols[3] == symbol and symbols[4] == symbol and symbols[5] == symbol:
             return True
         
-        # check bottom row 
-        elif g[6] == sym and g[7] == sym and g[8] == sym:
+        elif symbols[6] == symbol and symbols[7] == symbol and symbols[8] == symbol:
             return True 
 
-        # check left column 
-        elif g[0] == sym and g[3] == sym and g[6] == sym:
+        #checking the winning pattern across left, middle, right columns 
+        elif symbols[0] == symbol and symbols[3] == symbol and symbols[6] == symbol:
             return True 
 
-        # check middle column 
-        elif g[1] == sym and g[4] == sym and g[7] == sym:
+        elif symbols[1] == symbol and symbols[4] == symbol and symbols[7] == symbol:
             return True 
 
-        # check right column 
-        elif g[2] == sym and g[5] == sym and g[8] == sym:
+        elif symbols[2] == symbol and symbols[5] == symbol and symbols[8] == symbol:
             return True
 
-        # check top-right to bottom-left 
-        elif g[2] == sym and g[4] == sym and g[6] == sym:
+        #checking the winning pattern across the diagonals
+        elif symbols[2] == symbol and symbols[4] == symbol and symbols[6] == ssymbolym:
             return True 
 
-        # check top-left to bottom-right 
-        elif g[0] == sym and g[4] == sym and g[8] == sym:
+        elif symbols[0] == symbol and symbols[4] == symbol and symbols[8] == symbol:
             return True 
 
-        # didn't win... yet! 
+        #nothing matched!!
         return False
 
 
     def is_draw(self):
-        # see if all the spaces are used up 
-        num_blanks = 0
+        #checking whether all the grids are filled
+        blank_grids = 0
         for i in range(9):
-                if self.symbol_list[i] == " ":
-                    num_blanks += 1
+                if self.list_of_symbols[i] == " ":
+                    blank_grids += 1
 
         # if the player didn't win and no spaces are left, it's a draw
-        if self.did_win(self.player_symbol) == False and num_blanks == 0:
+        if self.player_win(self.symbol_of_player) == False and blank_grids == 0:
             return True
         else:
             return False
