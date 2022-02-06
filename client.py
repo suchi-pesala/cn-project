@@ -32,7 +32,7 @@ while play_again == True:
     player_two.update_symbol_list(symbol_list_of_player_one)
 
     # the rest is in a loop; if either player has won, it exits 
-    while player_two.player_win("O") == False and player_two.did_win("X") == False and player_two.is_draw() == False:
+    while player_two.player_win("O") == False and player_two.player_win("X") == False and player_two.is_draw() == False:
         #getting the input from the player
         print(f"\n       Your turn!")
         player_two.draw_grid()
